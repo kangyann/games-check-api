@@ -6,17 +6,26 @@
  * @returns {Promise<Record<string,any>>}
  */
 
-export async function ApiFetch({ data }: { data: Record<string, any> }): Promise<Record<string, any>> {
+type Method = "POST" | "GET"
 
-    try {
-        const get = await fetch('https://order-sg.codashop.com/initPayment.action', {
-            headers: {
-                "Content-Type": "application/json",
-            },
-            method: "POST",
+export async function ApiFetch({ data, method, url }: { data?: Record<string, any>, method: Method, url?: string }): Promise<Record<string, any>> {
+    let config: RequestInit = {
+        headers: {
+            "Content-Type": "application/json",
+        },
+        method: method,
+        cache: "no-cache"
+    };
+    const uri = url ? url : "https://order-sg.codashop.com/initPayment.action"
+
+    if (data) {
+        config = {
+            ...config,
             body: data ? JSON.stringify(data) : null,
-            cache: "no-cache"
-        })
+        }
+    }
+    try {
+        const get = await fetch(uri, config)
         return await get.json()
 
     } catch (error) {

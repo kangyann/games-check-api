@@ -6,7 +6,7 @@
 import { ApiFetch } from './api';
 import { MobileLegendsParams, MobileLegendsResponse, MobileLegendsConfirm } from '../interfaces/mobile-legends.interface';
 import { FreeFireConfirm, FreeFireParams, FreeFireResponse } from '@/interfaces/free-fire-interface';
-
+import { PointBlankConfirm, PointBlankParams, PointBlankResponse } from '@/interfaces/point-blank-interface';
 /**
  * @class CheckGames
  */
@@ -33,7 +33,8 @@ export default class CheckGames {
                 "voucherPricePoint.variablePrice": 0,
                 voucherTypeName: "MOBILE_LEGENDS",
                 shopLang: "id_ID"
-            }
+            },
+            method: "POST"
         })
 
         const { success, confirmationFields } = data as MobileLegendsConfirm
@@ -76,7 +77,8 @@ export default class CheckGames {
                 "voucherPricePoint.variablePrice": 0,
                 voucherTypeName: "FREEFIRE",
                 shopLang: "id_ID"
-            }
+            },
+            method: "POST"
         })
         const { success, confirmationFields } = data as FreeFireConfirm
 
@@ -100,6 +102,22 @@ export default class CheckGames {
                 username: role,
                 country: country
             }
+        }
+    }
+    static async isPointBlank({ userId }: PointBlankParams): Promise<PointBlankResponse> {
+        const data: Record<string, any> = await ApiFetch({ url: `https://www.pointblank.id/member/IdCheck?id=${userId}&cI_=ZlV0aUdvNUVGUjNidkh0NDh4QS9TMVl3KzNNcDM2elo2WWM5YnlHUVRKMUpMRWxHTlFJRFJFQlRlZlJ6WXlwbQ`, method: "GET" })
+
+        if (data?.resultCode == 1004) {
+
+            return {
+                status: 200,
+                message: "200 - [POINT - BLANK] : Data successfully retrieved",
+            }
+        }
+
+        return {
+            status: 404,
+            message : "404 - [POINT - BLANK] : Data not found."
         }
     }
 

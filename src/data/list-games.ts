@@ -6,5 +6,6 @@
 
 export const ListGamesType: string[] = [
     "mobile-legends",
-    "free-fire"
+    "free-fire",
+    "point-blank"
 ]

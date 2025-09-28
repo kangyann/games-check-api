@@ -1,0 +1,65 @@
+{
+  "data": [
+    {
+      "title": "Data ( JSON ) | Point Blank ",
+      "id": "example-request",
+      "code": {
+        "title": "Data",
+        "type": "json",
+        "json": {
+          "userId": "red_death2"
+        }
+      },
+      "dataTable": {
+        "caption": "Data is needed for server requirements.",
+        "column_header": ["Name", "Type", "Required ?", "Description"],
+        "column_body": [
+          {
+            "name": "userid",
+            "type": "string",
+            "req": "yes",
+            "desc": "Find your Profile ID in Profile Game."
+          }
+        ]
+      }
+    },
+    {
+      "title": "Example Fetch",
+      "id": "example-fetch",
+      "desc": "Example : /api/check-games?type=mobile-legends",
+      "dataTable": {
+        "caption": "Data is needed for server requirements.",
+        "column_header": ["Name", "Type", "Required ?", "Description"],
+        "column_body": [
+          {
+            "name": "type",
+            "type": "string",
+            "req": "yes",
+            "desc": "Type of games (ex: mobile-legends, free-fire)"
+          }
+        ]
+      },
+      "code": {
+        "title": "Request",
+        "type": "javascript",
+        "pre": "fetch('https://nuv-games-api.vercel.app/api/check-games?type=free-fire', {\n  method: 'POST',\n  headers: {\n   'Content-Type': 'application/json'\n  },\n  body: JSON.stringify({\n    userId: '12345678'\n  })\n })\n .then(res => res.json())\n .then(data => console.log(data))\n .catch(err => console.error('Error checking user:', err))"
+      }
+    },
+    {
+      "title": "Example Response",
+      "id": "example-response",
+      "code": {
+        "title": "Response",
+        "type": "javascript",
+        "json": {
+          "status": 200,
+          "message": "200 - [FREE-FIRE] : Data successfully retrieved ",
+          "data": {
+            "username": "_KENDANG",
+            "country": "Indonesia"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -52,6 +52,17 @@ export default async function Validation({ name, data }: ValidationParams): Prom
         return await CheckGames.isFreeFire({ userId })
     }
 
+    if (name === "point-blank") {
+        const { userId } = data as { userId: string }
+
+        if (!userId) {
+            return {
+                status: 404,
+                message: "[ POINT-BLANK ] - invalid parameters {userId}."
+            }
+        }
+        return await CheckGames.isPointBlank({ userId })
+    }
     return {
         status: 404,
         message: "Value of query {type} does not exist. Validation failed."

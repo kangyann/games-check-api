@@ -1,6 +1,6 @@
 /**
  * @constant
- * @exports ListGamesType
+ * @exports ListGames
  * @type {string[]}
  */
 

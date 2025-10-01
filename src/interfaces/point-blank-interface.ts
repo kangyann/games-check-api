@@ -1,26 +1,27 @@
 export interface PointBlankParams {
-    userId: string
+   userId: string;
 }
 export interface PointBlankResponse {
-    status: number,
-    message: string,
-    data?: {
-        username: string,
-        country: string
-    }
+   status: number;
+   message: string;
+   data?: {
+      username: string;
+      isValid?: boolean;
+      country?: string;
+   };
 }
 export interface PointBlankConfirm {
-    success: boolean,
-    user?: {
-        userId: string
-    },
-    confirmationFields?: {
-        userId: string,
-        country: string,
-        roles: [
-            {
-                role: string
-            }
-        ]
-    }
+   success: boolean;
+   user?: {
+      userId: string;
+   };
+   confirmationFields?: {
+      userId: string;
+      country: string;
+      roles: [
+         {
+            role: string;
+         }
+      ];
+   };
 }

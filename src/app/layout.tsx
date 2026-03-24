@@ -13,10 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nuv Games API - API Games Validation",
-  description: "Use Nuv Games API to check and validate game user accounts. It's free, public, and requires no login or API key.",
+  title: "Mylix App API - API Games Validation",
+  description: "Use Mylix App API to check and validate game user accounts. It's free, public.",
   keywords: [
-    "Nuv Games API",
+    "Mylix App API",
     "Game Checker",
     "Game Account Validation",
     "Free Game API",
@@ -24,35 +24,35 @@ export const metadata: Metadata = {
     "Nuvrify",
     "API for Developer",
     "Open Source Program",
-    "Nuv Games Vercel",
+    "Mylix App",
   ],
-  authors: [{ name: "kangyann", url: "https://nuv-games-api.vercel.app" }],
-  creator: "Nuvrify",
+  authors: [{ name: "kangyann", url: "https://mylix.app" }],
+  creator: "Mylix",
   robots: "index, follow",
   openGraph: {
-    title: "Nuv Games API - Free Game Account Validation",
+    title: "Mylix App API - Free Games Account Validation",
     description:
-      "Check game user IDs easily with Nuv Games API. No authentication required. Public and free to use.",
-    url: "https://nuv-games-api.vercel.app",
-    siteName: "Nuv Games API",
+      "Check game user IDs easily with Mylix App API. No authentication required. Public and free to use.",
+    url: "https://mylix.app",
+    siteName: "Mylix App API",
     images: [
       {
-        url: "https://nuv-games-api.vercel.app/icon.png",
+        url: "https://mylix.app/icon.png",
         width: 1200,
         height: 630,
-        alt: "Nuv Games API"
+        alt: "Mylix App API"
       }
     ],
     type: "website"
   },
   twitter: {
     card: "summary_large_image",
-    title: "Nuv Games API - Free Game Account Validation",
+    title: "Mylix App API - Free Games Account Validation",
     description:
       "Public API to check game user accounts without login or API key.",
-    images: ["https://nuv-games-api.vercel.app/icon.png"]
+    images: ["https://mylix.app/icon.png"]
   },
-  metadataBase: new URL("https://nuv-games-api.vercel.app")
+  metadataBase: new URL("https://mylix.app")
 };
 
 export default function RootLayout({

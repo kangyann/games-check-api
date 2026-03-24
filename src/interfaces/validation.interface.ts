@@ -3,6 +3,7 @@
  * @property {string} name
  * @property {Record<string, string>} data
  */
+
 export interface ValidationParams {
     name: string,
     data: Record<string, string>

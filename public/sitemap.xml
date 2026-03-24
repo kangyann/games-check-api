@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://nuv-games-api.vercel.app/</loc>
+    <loc>https://mylix.app/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://nuv-games-api.vercel.app/docs</loc>
+    <loc>https://mylix.app/docs</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nuv-games-api.vercel.app/docs/list-games</loc>
+    <loc>https://mylix.app/docs/list-games</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nuv-games-api.vercel.app/docs/check-user-game</loc>
+    <loc>https://mylix.app/docs/check-user-game</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

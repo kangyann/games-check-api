@@ -10,7 +10,7 @@
         "No Required Api Key or Authorization."
       ],
       "link": {
-        "to": "http://nuv-games-api.vercel.app/api/list-games",
+        "to": "http://mylix.app/api/list-games",
         "text": "List Games"
       }
     }

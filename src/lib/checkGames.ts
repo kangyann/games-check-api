@@ -26,6 +26,12 @@ export default class CheckGames {
     */
 
    static async isMobileLegends({ userId, zoneId }: MobileLegendsParams): Promise<MobileLegendsResponse> {
+      if (!userId || !zoneId) {
+         return {
+            status: 404,
+            message: "[ MOBILE-LEGENDS ] - invalid parameters {userId} or {zoneId}."
+         }
+      }
       const data: Record<string, any> = await ApiFetch({
          data: {
             "user.userId": `${userId}`,
@@ -70,6 +76,12 @@ export default class CheckGames {
     * @returns {Promise<FreeFireResponse>}
     */
    static async isFreeFire({ userId }: FreeFireParams): Promise<FreeFireResponse> {
+      if (!userId) {
+         return {
+            status: 404,
+            message: "[ FREE-FIRE ] - invalid parameters {userId}."
+         }
+      }
       const data: Record<string, any> = await ApiFetch({
          data: {
             "user.userId": `${userId}`,
@@ -105,17 +117,33 @@ export default class CheckGames {
       };
    }
    static async isPointBlank({ userId }: PointBlankParams): Promise<PointBlankResponse> {
+      if (!userId) {
+         return {
+            status: 404,
+            message: "[ POINT-BLANK ] - invalid parameters {userId}."
+         }
+      }
       const data: Record<string, any> = await ApiFetch({
-         url: `https://www.pointblank.id/member/IdCheck?id=${userId}&cI_=ZlV0aUdvNUVGUjNidkh0NDh4QS9TMVl3KzNNcDM2elo2WWM5YnlHUVRKMUpMRWxHTlFJRFJFQlRlZlJ6WXlwbQ`,
-         method: "GET",
+         data: {
+            "user.userId": `${userId}`,
+            'user.zoneId': '0',
+            "voucherPricePoint.id": '54700',
+            "voucherPricePoint.price": '11000',
+            "voucherPricePoint.variablePrice": '0',
+            voucherTypeName: "POINT_BLANK",
+            shopLang: "id_ID",
+         },
+         method: "POST",
       });
 
-      if (data?.resultCode == 1004) {
+      const { errorCode, user, confirmationFields, is_publisher_validate_error } = data as PointBlankConfirm
+      if (is_publisher_validate_error == false || errorCode === '') {
          return {
             status: 200,
             message: "200 - [POINT - BLANK] : Data successfully retrieved",
             data: {
-               username: userId,
+               username: user?.userId,
+               country: confirmationFields?.country,
                isValid: true,
             },
          };
@@ -125,7 +153,7 @@ export default class CheckGames {
          status: 404,
          message: "404 - [POINT - BLANK] : Data not found.",
          data: {
-            username: userId,
+            username: user?.userId,
             isValid: false,
          },
       };

@@ -8,6 +8,8 @@ import Validation from "@/lib/validation";
 import { NextResponse } from "next/server";
 import { ValidationResponse } from "../../../interfaces/validation.interface";
 import { isJson } from "@/lib/isJson";
+import { PrismaConnect } from "@/lib/prisma-config";
+import ListGamesClass, { ClassListGamesResponse, PrefixTypes } from "@/lib/ListGames/ListGames.class";
 
 /**
  * @function POST
@@ -40,16 +42,18 @@ export async function POST(request: Request): Promise<NextResponse> {
          { status: 400 }
       );
    }
-   const data: Record<string, any> = await isJson(request);
+   const jsonValidation: Record<string, any> = await isJson(request);
 
-   if (!data?.isValid) {
-      const { isValid, ...newestResponse } = data as Partial<{ isValid: boolean; message: string; status: number }>;
+   if (!jsonValidation?.isValid) {
+      const { isValid, ...newestResponse } = jsonValidation as Partial<{ isValid: boolean; message: string; status: number }>;
       return NextResponse.json(newestResponse, { status: newestResponse.status });
    }
 
-   const type: ListGamesTypes | undefined = ListGames.find((x) => x.prefix == params);
+   const ListGames = new ListGamesClass()
+   const type: ClassListGamesResponse = await ListGames.findFirst({ prefix: params as PrefixTypes })
 
-   if (!type) {
+   console.log("TYPE", type)
+   if (!type.data) {
       return NextResponse.json(
          {
             message: "400 - Query {type} does not exist.",
@@ -60,7 +64,8 @@ export async function POST(request: Request): Promise<NextResponse> {
       );
    }
 
-   const isValid: ValidationResponse | null = await Validation({ name: type.prefix, data });
+
+   const isValid: ValidationResponse | null = await Validation({ name: type.data.prefix, data: jsonValidation });
 
    if (isValid?.status !== 200) {
       return NextResponse.json(

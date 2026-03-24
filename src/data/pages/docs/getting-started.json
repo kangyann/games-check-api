@@ -30,7 +30,7 @@
           "title": "Example: Get All List Games",
           "alt": "getting-started-list-games-req",
           "type": "http",
-          "code": "GET https://nuv-games-api.vercel.com/api/list-games"
+          "code": "GET https://mylix.app/api/list-games"
         },
         {
           "title": "Response :",

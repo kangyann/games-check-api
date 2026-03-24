@@ -5,23 +5,18 @@ export interface PointBlankResponse {
    status: number;
    message: string;
    data?: {
-      username: string;
+      username?: string;
       isValid?: boolean;
       country?: string;
    };
 }
 export interface PointBlankConfirm {
-   success: boolean;
+   is_publisher_validate_error: boolean;
+   errorCode: string
    user?: {
       userId: string;
    };
    confirmationFields?: {
-      userId: string;
       country: string;
-      roles: [
-         {
-            role: string;
-         }
-      ];
    };
 }

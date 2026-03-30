@@ -32,6 +32,10 @@ export default async function Validation({ name, data }: ValidationParams): Prom
 
     if (name === "free-fire") {
         const { userId } = data as { userId: string }
+        return {
+            status: 503,
+            message: "Maintenance : API Free-Fire is currently unavailable. Please try again later."
+        }
         return await CheckGames.isFreeFire({ userId })
     }
 

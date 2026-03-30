@@ -84,16 +84,18 @@ export default class CheckGames {
       }
       const data: Record<string, any> = await ApiFetch({
          data: {
-            "user.userId": `${userId}`,
-            "voucherPricePoint.id": 270282,
-            "voucherPricePoint.price": 2000,
-            "voucherPricePoint.variablePrice": 0,
-            voucherTypeName: "FREEFIRE",
-            shopLang: "id_ID",
+            'user.userId': `${userId}`,
+            'voucherPricePoint.id': 9,
+            'voucherPricePoint.price': 19400,
+            'voucherPricePoint.variablePrice': 0,
+            'voucherTypeName': 'FREEFIRE',
+            'shopLang': 'id_ID',
          },
          method: "POST",
       });
+
       const { success, confirmationFields } = data as FreeFireConfirm;
+
 
       if (!success) {
          const { userId: id } = data?.user as { userId: string };

@@ -52,7 +52,6 @@ export async function POST(request: Request): Promise<NextResponse> {
    const ListGames = new ListGamesClass()
    const type: ClassListGamesResponse = await ListGames.findFirst({ prefix: params as PrefixTypes })
 
-   console.log("TYPE", type)
    if (!type.data) {
       return NextResponse.json(
          {

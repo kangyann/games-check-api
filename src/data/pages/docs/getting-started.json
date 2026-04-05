@@ -56,7 +56,7 @@
       "id": "notes",
       "alt": "getting-started-notes",
       "other": [
-        "This API is open to everyone — no signup, no tokens.",
+        "This API is open to everyone",
         "Data refreshed regularly",
         "Supports JSON only",
         "Fast & developer-friendly"

@@ -33,8 +33,7 @@ export default function Home(): React.ReactNode {
   }
 
   return (
-    <div className="">
-      <div className="font-[family-name:var(--font-geist-mono)]">
+      <div className="font-[family-name:var(--font-geist-mono)] bg-white text-black">
         <main className="w-full min-h-screen flex flex-col items-center justify-center px-6">
           <div className="flex flex-col items-center text-center">
             <Image src={LogoIcon} alt="mylix_icon" width={256} height={256} draggable={false} />
@@ -51,7 +50,6 @@ export default function Home(): React.ReactNode {
             </div>
           </div>
         </main>
-      </div >
     </div >
   )
 }

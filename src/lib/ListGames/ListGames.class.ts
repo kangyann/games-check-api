@@ -13,10 +13,10 @@ export interface ClassListGamesResponse {
 
 export default class ListGamesClass {
 
-    async findFirst({ prefix }: { prefix: PrefixTypes }): Promise<ClassListGamesResponse> {
+    async findFirst({ codeGame }: { codeGame: PrefixTypes }): Promise<ClassListGamesResponse> {
         try {
             const IsHaveGame: PrismaListGames = await PrismaConnect.listGames.findFirstOrThrow({
-                where: { prefix },
+                where: { codeGame },
                 select: {
                     name: true,
                     prefix: true

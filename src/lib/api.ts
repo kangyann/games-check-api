@@ -8,20 +8,14 @@
 
 type Method = "POST" | "GET"
 
-export async function ApiFetch({ data, method, url }: { data?: Record<string, any>, method: Method, url?: string }): Promise<Record<string, any>> {
+export async function ApiFetch({ data, method, url }: { data?: Record<string, any>, method: Method, url: string }): Promise<Record<string, any>> {
     let config: RequestInit = {
         headers: {
             "Content-Type": "application/json",
-            "Host": "order-sg.codashop.com",
-            "Accept-Language": "id-ID",
-            "Origin": "https://www.codashop.com",
-            "Referer": "https://www.codashop.com/",
-            "User-Agent": "Mozilla/5.0"
         },
         method: method,
         cache: "no-cache"
     };
-    const uri = url ? url : "https://order-sg.codashop.com/initPayment.action"
 
     if (data) {
         config = {
@@ -30,8 +24,7 @@ export async function ApiFetch({ data, method, url }: { data?: Record<string, an
         }
     }
     try {
-        const get = await fetch(uri, config)
-        console.log(get)
+        const get = await fetch(url, config)
         return await get.json()
 
     } catch (error) {

@@ -3,25 +3,33 @@
  * @function Validation
  * @interface /interface/validation.interface
  */
-import { ListGames, ListGamesTypes } from "@/data/list-games";
-import Validation from "@/lib/validation";
-import { NextResponse } from "next/server";
-import { ValidationResponse } from "../../../interfaces/validation.interface";
+import { NextRequest, NextResponse } from "next/server";
 import { isJson } from "@/lib/isJson";
-import { PrismaConnect } from "@/lib/prisma-config";
+import { CheckGamesResponse } from "@/interfaces/check-games.interface";
+
 import ListGamesClass, { ClassListGamesResponse, PrefixTypes } from "@/lib/ListGames/ListGames.class";
+import CheckGames from "@/lib/checkGames";
 
 /**
  * @function POST
  * @constant
  * @param {Request} request
- * @type {string | null | Record<string,any> | undefined | ValidationResponse}
+ * @type {string | null | Record<string,any> | undefined}
  * @returns {Promise<NextResponse>}
  */
 
-export async function POST(request: Request): Promise<NextResponse> {
+export async function POST(request: NextRequest): Promise<NextResponse> {
    const params: string | null = new URL(request.url).searchParams.get("type") ?? null;
    const contentType = request.headers.get("Content-Type") ?? "";
+   const jsonValidation: Record<string, any> = await isJson(request);
+   const { userId, serverId } = jsonValidation
+
+   if (!userId) {
+      return NextResponse.json({
+         status: 400,
+         message: "Invalid parameters {userId} or {zoneId}."
+      }, { status: 400 })
+   }
 
    if (!params) {
       return NextResponse.json(
@@ -42,7 +50,6 @@ export async function POST(request: Request): Promise<NextResponse> {
          { status: 400 }
       );
    }
-   const jsonValidation: Record<string, any> = await isJson(request);
 
    if (!jsonValidation?.isValid) {
       const { isValid, ...newestResponse } = jsonValidation as Partial<{ isValid: boolean; message: string; status: number }>;
@@ -50,21 +57,20 @@ export async function POST(request: Request): Promise<NextResponse> {
    }
 
    const ListGames = new ListGamesClass()
-   const type: ClassListGamesResponse = await ListGames.findFirst({ prefix: params as PrefixTypes })
+   const type: ClassListGamesResponse = await ListGames.findFirst({ codeGame: params as PrefixTypes })
 
    if (!type.data) {
       return NextResponse.json(
          {
-            message: "400 - Query {type} does not exist.",
-            status: 400,
+            message: "404 - Types for game does not exist.",
+            status: 404,
             ref: "Fetch [GET] : /api/list-game for available types",
          },
-         { status: 400 }
+         { status: 404 }
       );
    }
-
-
-   const isValid: ValidationResponse | null = await Validation({ name: type.data.prefix, data: jsonValidation });
+   console.log(`[REQUEST FROM ${request.headers.get("x-forwarded-for")}] -> ${type.data?.name}`)
+   const isValid: CheckGamesResponse | null = await CheckGames.check({ prefix: type.data.prefix, data: jsonValidation as { userId: string, serverId: string } });
 
    if (isValid?.status !== 200) {
       return NextResponse.json(

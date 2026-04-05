@@ -5,12 +5,9 @@
 
 import { ApiFetch } from "./api";
 import {
-   MobileLegendsParams,
-   MobileLegendsResponse,
-   MobileLegendsConfirm,
-} from "../interfaces/mobile-legends.interface";
-import { FreeFireConfirm, FreeFireParams, FreeFireResponse } from "@/interfaces/free-fire-interface";
-import { PointBlankConfirm, PointBlankParams, PointBlankResponse } from "@/interfaces/point-blank-interface";
+   CheckGamesParams,
+   CheckGamesResponse,
+} from "../interfaces/check-games.interface";
 /**
  * @class CheckGames
  */
@@ -25,139 +22,25 @@ export default class CheckGames {
     * @returns {Promise<MobileLegendsResponse>}
     */
 
-   static async isMobileLegends({ userId, zoneId }: MobileLegendsParams): Promise<MobileLegendsResponse> {
-      if (!userId || !zoneId) {
+   private static url: string = `${process.env.GAME_API_URL!}`
+   private static key: string = process.env.GAME_API_KEY!
+
+   static async check({ data, prefix }: CheckGamesParams): Promise<CheckGamesResponse> {
+      const { userId, serverId } = data
+      const url = `${this.url}/${prefix}?id=${userId}&zone=${serverId}&key=${this.key}`
+      const result: Record<string, any> = await ApiFetch({ url: url, method: "GET" });
+
+      if (result && !result.data) {
          return {
+            message: `Not found user with this userId: ${userId}`,
             status: 404,
-            message: "[ MOBILE-LEGENDS ] - invalid parameters {userId} or {zoneId}."
-         }
-      }
-      const data: Record<string, any> = await ApiFetch({
-         data: {
-            "user.userId": `${userId}`,
-            "user.zoneId": `${zoneId}`,
-            "voucherPricePoint.id": 271318,
-            "voucherPricePoint.price": 24254,
-            "voucherPricePoint.variablePrice": 0,
-            voucherTypeName: "MOBILE_LEGENDS",
-            shopLang: "id_ID",
-         },
-         method: "POST",
-      });
-
-      const { success, confirmationFields } = data as MobileLegendsConfirm;
-
-      if (!success) {
-         const { userId: id, zoneId: server } = data?.user as { userId: string; zoneId: string };
-         return {
-            status: 500,
-            message: `500 - [MOBILE-LEGENDS] : No user found with userId as {${id}} or zoneId as {${server}}.`,
          };
       }
-
-      const { username, country } = confirmationFields as { username: string; country: string };
 
       return {
          status: 200,
-         message: "200 - [MOBILE-LEGENDS] : Data successfully retrieved ",
-         data: {
-            username: username,
-            country: country,
-         },
-      };
-   }
-
-   /**
-    * @function isFreeFire
-    * @static
-    * @constant
-    * @type {Record<string,any> | FreeFireConfirm}
-    * @param {FreeFireParams} params - Parameter Request {userId}
-    * @returns {Promise<FreeFireResponse>}
-    */
-   static async isFreeFire({ userId }: FreeFireParams): Promise<FreeFireResponse> {
-      if (!userId) {
-         return {
-            status: 404,
-            message: "[ FREE-FIRE ] - invalid parameters {userId}."
-         }
-      }
-      const data: Record<string, any> = await ApiFetch({
-         data: {
-            'user.userId': `${userId}`,
-            'voucherPricePoint.id': 9,
-            'voucherPricePoint.price': 19400,
-            'voucherPricePoint.variablePrice': 0,
-            'voucherTypeName': 'FREEFIRE',
-            'shopLang': 'id_ID',
-         },
-         method: "POST",
-      });
-
-      const { success, confirmationFields } = data as FreeFireConfirm;
-
-
-      if (!success) {
-         const { userId: id } = data?.user as { userId: string };
-
-         return {
-            status: 500,
-            message: `500 - [FREE-FIRE] : No user found with userId as {${id}}.`,
-         };
-      }
-      const { country, roles } = confirmationFields as { country: string; roles: Partial<{ role: string }>[] };
-
-      const { role } = roles[0] as { role: string };
-
-      return {
-         status: 200,
-         message: "200 - [FREE-FIRE] : Data successfully retrieved ",
-         data: {
-            username: role,
-            country: country,
-         },
-      };
-   }
-   static async isPointBlank({ userId }: PointBlankParams): Promise<PointBlankResponse> {
-      if (!userId) {
-         return {
-            status: 404,
-            message: "[ POINT-BLANK ] - invalid parameters {userId}."
-         }
-      }
-      const data: Record<string, any> = await ApiFetch({
-         data: {
-            "user.userId": `${userId}`,
-            'user.zoneId': '0',
-            "voucherPricePoint.id": '54700',
-            "voucherPricePoint.price": '11000',
-            "voucherPricePoint.variablePrice": '0',
-            voucherTypeName: "POINT_BLANK",
-            shopLang: "id_ID",
-         },
-         method: "POST",
-      });
-
-      const { errorCode, user, confirmationFields, is_publisher_validate_error } = data as PointBlankConfirm
-      if (is_publisher_validate_error == false || errorCode === '') {
-         return {
-            status: 200,
-            message: "200 - [POINT - BLANK] : Data successfully retrieved",
-            data: {
-               username: user?.userId,
-               country: confirmationFields?.country,
-               isValid: true,
-            },
-         };
-      }
-
-      return {
-         status: 404,
-         message: "404 - [POINT - BLANK] : Data not found.",
-         data: {
-            username: user?.userId,
-            isValid: false,
-         },
+         message: "Data successfully retrieved ",
+         data: result?.data
       };
    }
 }

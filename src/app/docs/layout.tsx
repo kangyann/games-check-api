@@ -60,7 +60,7 @@ export default function DocsLayout({ children }: Readonly<{ children: React.Reac
                 <div className="container flex mx-auto relative">
 
                     {/*  */}
-                    <div className="flex-[.7] min-w-48 min-h-screen z-10 text-nowrap xl:block lg:block md:block hidden border-e border-gray-100 ">
+                    <div className="flex-[.7] min-w-48 min-h-screen z-10 xl:block lg:block md:block hidden border-e border-gray-100 ">
                         <section className="sticky left-0 top-16 w-full space-y-1.5 px-6 py-3 text-sm overflow-x-hidden flex flex-col gap-1">
                             {data['sidebar-link'].map((value: Record<string, any>, index: number) => (
                                 <React.Fragment key={`${value.alt}-${index}`}>

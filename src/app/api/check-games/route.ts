@@ -63,7 +63,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
    }
 
    const { userId, serverId } = jsonValidation
-   if (!!userId) {
+   if (!userId) {
       return NextResponse.json({
          status: 400,
          message: "Invalid parameters {userId} or {zoneId}."

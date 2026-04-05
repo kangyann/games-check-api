@@ -2,7 +2,6 @@ export async function isJson(request: Request): Promise<Record<string, string | 
     try {
         const data: Record<string, any> = await request.json()
 
-
         if (Object.keys(data).length == 0) {
             return {
                 message: "Required data body {userId} or {serverId}.",

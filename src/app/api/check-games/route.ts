@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { isJson } from "@/lib/isJson";
 import { CheckGamesResponse } from "@/interfaces/check-games.interface";
 
-import ListGamesClass, { ClassListGamesResponse, PrefixTypes } from "@/lib/ListGames/ListGames.class";
+import ListGamesClass, { ClassListGamesResponse } from "@/lib/ListGames/ListGames.class";
 import CheckGames from "@/lib/checkGames";
 
 /**
@@ -22,14 +22,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
    const params: string | null = new URL(request.url).searchParams.get("type") ?? null;
    const contentType = request.headers.get("Content-Type") ?? "";
    const jsonValidation: Record<string, any> = await isJson(request);
-   const { userId, serverId } = jsonValidation
-
-   if (!userId) {
-      return NextResponse.json({
-         status: 400,
-         message: "Invalid parameters {userId} or {zoneId}."
-      }, { status: 400 })
-   }
 
    if (!params) {
       return NextResponse.json(
@@ -57,7 +49,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
    }
 
    const ListGames = new ListGamesClass()
-   const type: ClassListGamesResponse = await ListGames.findFirst({ codeGame: params as PrefixTypes })
+   const type: ClassListGamesResponse = await ListGames.findFirst({ codeGame: params })
 
    if (!type.data) {
       return NextResponse.json(
@@ -69,6 +61,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
          { status: 404 }
       );
    }
+
+   const { userId, serverId } = jsonValidation
+   if (!!userId) {
+      return NextResponse.json({
+         status: 400,
+         message: "Invalid parameters {userId} or {zoneId}."
+      }, { status: 400 })
+   }
+
    console.log(`[REQUEST FROM ${request.headers.get("x-forwarded-for")}] -> ${type.data?.name}`)
    const isValid: CheckGamesResponse | null = await CheckGames.check({ prefix: type.data.prefix, data: jsonValidation as { userId: string, serverId: string } });
 

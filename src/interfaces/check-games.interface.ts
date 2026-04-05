@@ -1,8 +1,4 @@
-/**
- * @interface MobileLegendsParams
- * @property {string} userId
- * @property {string} zoneId
- */
+
 export interface CheckGamesParams {
     data: {
         userId: string,

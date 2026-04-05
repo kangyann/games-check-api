@@ -1,5 +1,4 @@
 import { PrismaConnect } from "../prisma-config";
-export type PrefixTypes = "mobile-legends" | "free-fire" | "point-blank"
 
 interface PrismaListGames {
     name: string
@@ -13,7 +12,7 @@ export interface ClassListGamesResponse {
 
 export default class ListGamesClass {
 
-    async findFirst({ codeGame }: { codeGame: PrefixTypes }): Promise<ClassListGamesResponse> {
+    async findFirst({ codeGame }: { codeGame: string }): Promise<ClassListGamesResponse> {
         try {
             const IsHaveGame: PrismaListGames = await PrismaConnect.listGames.findFirstOrThrow({
                 where: { codeGame },

@@ -1,29 +1,26 @@
-/**
- * @function ApiFetch;
- * @interface /interfaces/mobile-legends.interface
- */
-
 import { ApiFetch } from "./api";
 import {
    CheckGamesParams,
    CheckGamesResponse,
 } from "../interfaces/check-games.interface";
+
 /**
  * @class CheckGames
  */
 
 export default class CheckGames {
-   /**
-    * @function isMobileLegends
-    * @static
-    * @constant
-    * @type {Record<string,any> | MobileLegendsConfirm}
-    * @param {MobileLegendsParams} params - Parameter Request {userId} {zoneId}
-    * @returns {Promise<MobileLegendsResponse>}
-    */
 
    private static url: string = `${process.env.GAME_API_URL!}`
    private static key: string = process.env.GAME_API_KEY!
+
+   /**
+    * @function check
+    * @static
+    * @constant
+    * @param {CheckGamesParams} params - Parameter Request {userId} {zoneId}
+    * @returns {Promise<CheckGamesResponse>}
+    */
+
 
    static async check({ data, prefix }: CheckGamesParams): Promise<CheckGamesResponse> {
       const { userId, serverId } = data

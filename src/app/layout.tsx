@@ -13,28 +13,36 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Mylix App API - API Games Validation",
+  title: "Mylix App - Game Validation API & Game ID Checker",
+  applicationName: "Mylix App",
   description: "Use Mylix App API to check and validate game user accounts. It's free, public.",
   keywords: [
-    "Mylix App API",
-    "Game Checker",
-    "Game Account Validation",
-    "Free Game API",
+    "mylix app api",
+    "game checker",
+    "game account validation",
+    "free game api",
+    "mylix app",
+    "api validasi user game",
+    "mylix api games",
+    "mylix app game api",
     "Public Game API",
-    "Nuvrify",
-    "API for Developer",
-    "Open Source Program",
-    "Mylix App",
+    "game validation api",
+    "game id checker api",
+    "user id validation api",
+    "gaming api provider",
+    "mobile legends api checker",
+    "free fire api checker",
+    "api validasi game",
   ],
   authors: [{ name: "kangyann", url: "https://mylix.app" }],
   creator: "Mylix",
   robots: "index, follow",
   openGraph: {
-    title: "Mylix App API - Free Games Account Validation",
+    title: "Mylix App API",
     description:
-      "Check game user IDs easily with Mylix App API. No authentication required. Public and free to use.",
+      "Free Game Validation API to check user IDs, nicknames, and accounts instantly. Built for developers.",
     url: "https://mylix.app",
-    siteName: "Mylix App API",
+    siteName: "Mylix App",
     images: [
       {
         url: "https://mylix.app/icon.png",
@@ -47,12 +55,15 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mylix App API - Free Games Account Validation",
+    title: "Mylix App - Free Games Account Validation",
     description:
       "Public API to check game user accounts without login or API key.",
     images: ["https://mylix.app/icon.png"]
   },
-  metadataBase: new URL("https://mylix.app")
+  metadataBase: new URL("https://mylix.app"),
+  alternates: {
+    canonical: "https://mylix.app",
+  },
 };
 
 export default function RootLayout({
@@ -62,7 +73,30 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <link rel="icon" href="/icon.png" sizes="any" />
+      <head>
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                name: "Mylix App",
+                url: "https://mylix.app",
+                logo: "https://mylix.app/icon.png",
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                name: "Mylix App",
+                url: "https://mylix.app",
+              },
+            ]),
+          }}
+        />
+        <link rel="icon" href="/icon.png" sizes="any" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >

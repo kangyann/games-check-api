@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isJson } from "@/lib/isJson";
 import { CheckGamesResponse } from "@/interfaces/check-games.interface";
+import { PrismaConnect } from "@/lib/prisma-config";
 
 import ListGamesClass, { ClassListGamesResponse } from "@/lib/ListGames/ListGames.class";
 import CheckGames from "@/lib/checkGames";
@@ -21,7 +22,62 @@ import CheckGames from "@/lib/checkGames";
 export async function POST(request: NextRequest): Promise<NextResponse> {
    const params: string | null = new URL(request.url).searchParams.get("type") ?? null;
    const contentType = request.headers.get("Content-Type") ?? "";
-   const jsonValidation: Record<string, any> = await isJson(request);
+   const apiKeyHeader = request.headers.get("x-api-key") ?? "";
+
+   // Validate API key
+   if (!apiKeyHeader) {
+      return NextResponse.json(
+         {
+            message: "401 - Missing API Key. Provide 'x-api-key' header.",
+            status: 401,
+         },
+         { status: 401 }
+      );
+   }
+
+   const apiKeyRecord = await PrismaConnect.apiKey.findUnique({
+      where: { key: apiKeyHeader },
+      include: { user: { select: { id: true, role: true, isActive: true } } },
+   });
+
+   if (!apiKeyRecord || !apiKeyRecord.isActive) {
+      return NextResponse.json(
+         {
+            message: "401 - Invalid or revoked API Key.",
+            status: 401,
+         },
+         { status: 401 }
+      );
+   }
+
+   if (!apiKeyRecord.user.isActive) {
+      return NextResponse.json(
+         {
+            message: "403 - Account disabled. Contact support.",
+            status: 403,
+         },
+         { status: 403 }
+      );
+   }
+
+   // Rate limit check
+   const { role } = apiKeyRecord.user;
+   if (role === "MEMBER") {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayCount = await PrismaConnect.apiLog.count({
+         where: { userId: apiKeyRecord.user.id, createdAt: { gte: today } },
+      });
+      if (todayCount >= 1000) {
+         return NextResponse.json(
+            {
+               message: "429 - Daily rate limit exceeded (1000/day). Upgrade to VIP for unlimited access.",
+               status: 429,
+            },
+            { status: 429 }
+         );
+      }
+   }
 
    if (!params) {
       return NextResponse.json(
@@ -42,6 +98,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
          { status: 400 }
       );
    }
+
+   const jsonValidation: Record<string, any> = await isJson(request);
 
    if (!jsonValidation?.isValid) {
       const { isValid, ...newestResponse } = jsonValidation as Partial<{ isValid: boolean; message: string; status: number }>;
@@ -72,6 +130,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
    console.log(`[REQUEST FROM ${request.headers.get("x-forwarded-for")}] -> ${type.data?.name}`)
    const isValid: CheckGamesResponse | null = await CheckGames.check({ prefix: type.data.prefix, data: jsonValidation as { userId: string, serverId: string } });
+
+   // Log the request
+   await PrismaConnect.apiLog.create({
+      data: {
+         apiKeyId: apiKeyRecord.id,
+         userId: apiKeyRecord.user.id,
+         endpoint: `/api/check-games?type=${params}`,
+         method: "POST",
+         status: isValid?.status ?? 500,
+         ip: request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || null,
+      },
+   });
 
    if (isValid?.status !== 200) {
       return NextResponse.json(

@@ -1,44 +1,130 @@
-"use client"
+"use client";
 import { useEffect } from "react";
 import { useOnThisPage } from "@/context/OnThisPage";
-import MainDocsComponent from "@/components/organisms/docs/main"
-import HightLightAtoms from '@/components/atoms/highlight';
-import datajson from "@/data/pages/docs/getting-started.json"
+import CodeTabs, {
+  ApiPlayground,
+} from "@/components/organisms/docs/code-tabs";
+import { FaRocket, FaCode, FaShieldHalved, FaBolt } from "react-icons/fa6";
+
+const anchorLinks = [
+  { id: "getting-started", label: "Introduction" },
+  { id: "features", label: "Features" },
+  { id: "quick-start", label: "Quick Start" },
+  { id: "try-it", label: "Try It" },
+];
 
 export default function Docs() {
-    const { data } = datajson
-    const { setItems } = useOnThisPage()
+  const { setItems } = useOnThisPage();
 
-    useEffect(() => {
-        setItems(datajson.anhcor_link)
-    }, [setItems])
+  useEffect(() => {
+    setItems(anchorLinks);
+  }, [setItems]);
 
-    return (
-        <>
-            {data && data.map((value, index) => (
-                <MainDocsComponent title={value.title} key={`${value.alt}-${index}`} id={value.id}>
-                    <p>{value.desc}</p>
-                    {value.other && (
-                        <ul className="list-disc ms-6 space-y-1.5">
-                            {value.other.map((items, index) => (
-                                <li key={`${items}-${index}`}>{items}</li>
-                            ))}
-                        </ul>
-                    )}
-                    {value.dataWithCode && value.dataWithCode.map((items, index) => (
-                        <HightLightAtoms type={items.type} title={items.title} key={`${items.alt}-${index}`} data={items.json ?? items.code}>
-                            {items.code && <code>{items.code}</code>}
-                            {items.json && <pre>{JSON.stringify(items.json, null, 2)}</pre>}
-                        </HightLightAtoms>
-                    ))}
-                </MainDocsComponent>
-            ))}
-            <MainDocsComponent title="Contribute on Github" id="contribute">
-                <p>We welcome contributions!</p>
-                <p>If you’d like to improve the API, fix bugs, or suggest new features, feel free to open an issue or submit a pull request on our <a href="https://github.com/kangyann/games-check-api" className="text-indigo-500 hover:underline hover:text-indigo-700 transition">GitHub repository.</a></p>
-                <p>Your feedback and contributions help make this API better for everyone!</p>
-                <div className="border-s-4 border-s-gray-200 px-3 py-1.5 rounded text-indigo-500">Let’s build something great together!</div>
-            </MainDocsComponent>
-        </>
-    )
+  return (
+    <div className="space-y-8">
+      {/* Intro */}
+      <section id="getting-started">
+        <h2 className="text-xl font-bold mb-2">Getting Started</h2>
+        <p className="text-sm text-muted leading-relaxed">
+          The Mylix Games API lets you validate game user accounts instantly.
+          Free, fast, and developer-friendly.
+        </p>
+      </section>
+
+      {/* Features */}
+      <section id="features">
+        <h3 className="text-lg font-semibold mb-3">Features</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            {
+              icon: FaBolt,
+              title: "Real-Time Validation",
+              desc: "Instantly verify game accounts with live data.",
+              color: "text-warning",
+              bg: "bg-warning-light",
+            },
+            {
+              icon: FaCode,
+              title: "Developer Friendly",
+              desc: "Simple JSON responses, RESTful design.",
+              color: "text-primary",
+              bg: "bg-primary-subtle",
+            },
+            {
+              icon: FaRocket,
+              title: "Fast & Reliable",
+              desc: "Low latency with real-time game data.",
+              color: "text-success",
+              bg: "bg-success-light",
+            },
+            {
+              icon: FaShieldHalved,
+              title: "Supports JSON",
+              desc: "All responses in standard JSON format.",
+              color: "text-accent",
+              bg: "bg-accent-light",
+            },
+          ].map((f) => (
+            <div
+              key={f.title}
+              className="flex items-start gap-3 p-3 rounded-lg border border-border-light hover:border-border transition"
+            >
+              <div className={`${f.bg} ${f.color} p-2 rounded-lg flex-shrink-0`}>
+                <f.icon size={14} />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">{f.title}</p>
+                <p className="text-xs text-muted mt-0.5">{f.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Quick Start */}
+      <section id="quick-start">
+        <h3 className="text-lg font-semibold mb-3">Quick Start</h3>
+        <p className="text-sm text-muted mb-3">
+          Use any HTTP client to make requests:
+        </p>
+        <CodeTabs
+          tabs={[
+            {
+              label: "cURL",
+              language: "bash",
+              code: `curl https://mylix.app/api/list-games`,
+            },
+            {
+              label: "JavaScript",
+              language: "javascript",
+              code: `fetch('https://mylix.app/api/list-games')
+  .then(res => res.json())
+  .then(data => console.log(data))`,
+            },
+            {
+              label: "Python",
+              language: "python",
+              code: `import requests
+
+response = requests.get('https://mylix.app/api/list-games')
+print(response.json())`,
+            },
+          ]}
+        />
+      </section>
+
+      {/* Try It */}
+      <section id="try-it">
+        <h3 className="text-lg font-semibold mb-3">Try It Live</h3>
+        <p className="text-sm text-muted mb-3">
+          Test the API right here — no setup needed.
+        </p>
+        <ApiPlayground
+          method="GET"
+          endpoint="/api/list-games"
+          description="Retrieve all available game types."
+        />
+      </section>
+    </div>
+  );
 }

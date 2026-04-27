@@ -13,34 +13,37 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Mylix App - Game Validation API & Game ID Checker",
+  title: {
+    default: "Mylix App - Game Account Validation API",
+    template: "%s | Mylix App",
+  },
   applicationName: "Mylix App",
-  description: "Use Mylix App API to check and validate game user accounts. It's free, public.",
+  description:
+    "Validate game user accounts instantly with Mylix API. Supports Mobile Legends, Free Fire, and more. Developer-friendly REST API with dashboard and usage monitoring.",
   keywords: [
     "mylix app api",
     "game checker",
     "game account validation",
-    "free game api",
+    "game validation api",
     "mylix app",
     "api validasi user game",
     "mylix api games",
-    "mylix app game api",
-    "Public Game API",
-    "game validation api",
     "game id checker api",
     "user id validation api",
     "gaming api provider",
     "mobile legends api checker",
     "free fire api checker",
     "api validasi game",
+    "cek id game",
+    "cek nickname game",
   ],
   authors: [{ name: "kangyann", url: "https://mylix.app" }],
   creator: "Mylix",
   robots: "index, follow",
   openGraph: {
-    title: "Mylix App API",
+    title: "Mylix App - Game Account Validation API",
     description:
-      "Free Game Validation API to check user IDs, nicknames, and accounts instantly. Built for developers.",
+      "Developer-friendly API to validate game user accounts in real-time. Dashboard, API keys, usage monitoring, and interactive docs included.",
     url: "https://mylix.app",
     siteName: "Mylix App",
     images: [
@@ -48,17 +51,17 @@ export const metadata: Metadata = {
         url: "https://mylix.app/icon.png",
         width: 1200,
         height: 630,
-        alt: "Mylix App API"
-      }
+        alt: "Mylix App - Game Account Validation API",
+      },
     ],
-    type: "website"
+    type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mylix App - Free Games Account Validation",
+    title: "Mylix App - Game Account Validation API",
     description:
-      "Public API to check game user accounts without login or API key.",
-    images: ["https://mylix.app/icon.png"]
+      "Validate game accounts instantly. REST API with dashboard, rate limiting, and interactive documentation.",
+    images: ["https://mylix.app/icon.png"],
   },
   metadataBase: new URL("https://mylix.app"),
   alternates: {
@@ -85,12 +88,39 @@ export default function RootLayout({
                 name: "Mylix App",
                 url: "https://mylix.app",
                 logo: "https://mylix.app/icon.png",
+                description:
+                  "Developer-friendly API platform for game account validation.",
               },
               {
                 "@context": "https://schema.org",
                 "@type": "WebSite",
                 name: "Mylix App",
                 url: "https://mylix.app",
+                description:
+                  "Validate game user accounts instantly with Mylix API. Supports Mobile Legends, Free Fire, and more.",
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "WebApplication",
+                name: "Mylix App",
+                url: "https://mylix.app",
+                applicationCategory: "DeveloperApplication",
+                operatingSystem: "All",
+                description:
+                  "REST API for real-time game account validation with developer dashboard, API key management, and usage monitoring.",
+                offers: {
+                  "@type": "Offer",
+                  price: "0",
+                  priceCurrency: "USD",
+                  description: "Free tier with 1000 requests/day",
+                },
+                featureList: [
+                  "Game account validation API",
+                  "Developer dashboard",
+                  "API key management",
+                  "Usage monitoring & rate limiting",
+                  "Interactive API documentation",
+                ],
               },
             ]),
           }}

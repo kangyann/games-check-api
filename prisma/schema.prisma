@@ -19,12 +19,69 @@ enum Role {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  username String  @unique
-  name     String?
-  password String
-  role     Role    @default(MEMBER)
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  username      String         @unique
+  name          String?
+  password      String
+  role          Role           @default(MEMBER)
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now()) @updatedAt
+  sessions      Session[]
+  apiKeys       ApiKey[]
+  notifications Notification[]
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ApiKey {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  key       String   @unique
+  name      String   @default("Default")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs      ApiLog[]
+}
+
+model ApiLog {
+  id        Int      @id @default(autoincrement())
+  apiKeyId  Int?
+  userId    Int?
+  endpoint  String
+  method    String
+  status    Int
+  ip        String?
+  createdAt DateTime @default(now())
+  apiKey    ApiKey?  @relation(fields: [apiKeyId], references: [id])
+}
+
+enum NotificationType {
+  INFO
+  WARNING
+  SUCCESS
+  PROMO
+}
+
+model Notification {
+  id        Int              @id @default(autoincrement())
+  userId    Int?
+  title     String
+  message   String
+  type      NotificationType @default(INFO)
+  isRead    Boolean          @default(false)
+  isGlobal  Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  user      User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ListGames {

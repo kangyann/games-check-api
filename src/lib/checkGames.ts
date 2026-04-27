@@ -10,7 +10,7 @@ import {
 
 export default class CheckGames {
 
-   private static url: string = `${process.env.GAME_API_URL!}`
+   private static url: string = `${process.env.GAME_API_URL!}/api/game`
    private static key: string = process.env.GAME_API_KEY!
 
    /**

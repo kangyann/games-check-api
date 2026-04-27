@@ -1,97 +1,302 @@
 "use client";
-import MainDocsComponent from "@/components/organisms/docs/main";
-import HightLightAtom from "@/components/atoms/highlight";
-import datajson from "@/data/pages/docs/check-games.json";
-import TableComponent from "@/components/organisms/docs/tables";
-import { useOnThisPage } from "@/context/OnThisPage";
 import { useEffect, useState } from "react";
-import { CombinedGames } from "@/data/combined-games";
+import { useOnThisPage } from "@/context/OnThisPage";
+import CodeTabs, {
+  ApiPlayground,
+} from "@/components/organisms/docs/code-tabs";
 import { ListGames } from "@/data/list-games";
 import Link from "next/link";
 
+const anchorLinks = [
+  { id: "endpoint", label: "Endpoint" },
+  { id: "authentication", label: "Authentication" },
+  { id: "parameters", label: "Parameters" },
+  { id: "example-request", label: "Example Request" },
+  { id: "example-response", label: "Example Response" },
+  { id: "try-it", label: "Try It" },
+];
+
 export default function DocsCheckUserGame() {
-   const { data } = datajson;
-   const { setItems } = useOnThisPage();
-   const [category, setCategory] = useState<string>("mobile-legends");
+  const { setItems } = useOnThisPage();
+  const [selectedGame, setSelectedGame] = useState("mobile-legends");
 
-   useEffect(() => {
-      setItems(datajson.anchor_link);
-   }, [setItems]);
-   return (
-      <>
-         {data &&
-            data.map((value, index) => (
-               <MainDocsComponent title={value.title} key={`${value.title}-${index}`} id={value.id}>
-                  <p>{value.desc}</p>
-                  {value.other && (
-                     <span>
-                        <ul className="list-disc ms-6 space-y-3">
-                           {value.other.map((items, index) => (
-                              <li key={`${items}-${index}`} className={`${index == 2 ? "font-semibold" : ""}`}>
-                                 {items}
-                              </li>
-                           ))}
-                        </ul>
-                        <div className="flex items-center gap-1.5 my-1">
-                           <label id="type_games" htmlFor="type_games">
-                              Choose a game types :{" "}
-                           </label>
-                           <select
-                              name="type_games"
-                              id="type_games"
-                              title="Choose game type."
-                              className="border rounded w-fit px-3 py-1 border-gray-100 cursor-pointer focus:border-indigo-500 hover:border-indigo-500 transition outline-none"
-                              onChange={(e) => setCategory(e.currentTarget.value)}
-                           >
-                              {ListGames.map((items, index) => (
-                                 <option value={items.prefix} key={`${items}-${index}`}>
-                                    {items.name}
-                                 </option>
-                              ))}
-                           </select>
-                        </div>
-                     </span>
-                  )}
-                  {value.link && (
-                     <p className="my-1">
-                        Find a type of game here.{" "}
-                        <Link href={value.link.to} className="text-indigo-500 hover:underline transition">
-                           {value.link.text}
-                        </Link>
-                     </p>
-                  )}
-               </MainDocsComponent>
-            ))}
-         {CombinedGames[category] &&
-            CombinedGames[category].map((value: any, index: number) => (
-               <MainDocsComponent title={value.title} id={value.id} key={`${value.id}-${index}`}>
-                  {value.dataTable && (
-                     <TableComponent header={value.dataTable.column_header} caption={value.dataTable.caption}>
-                        {value.dataTable.column_body.map((items: any, index: any) => (
-                           <tr key={`${items.name}-${index}`}>
-                              <td className="px-3 py-1.5 border border-gray-100">
-                                 <i className="bg-[rgb(0,0,0,.075)] p-1 rounded">{items.name}</i>
-                              </td>
-                              <td className="px-3 py-1.5 border border-gray-100">{items.type}</td>
-                              <td className="px-3 py-1.5 border border-gray-100">{items.req}</td>
-                              <td className="px-3 py-1.5 border border-gray-100">{items.desc}</td>
-                           </tr>
-                        ))}
-                     </TableComponent>
-                  )}
+  useEffect(() => {
+    setItems(anchorLinks);
+  }, [setItems]);
 
-                  {value.code && (
-                     <HightLightAtom
-                        type={value.code.type}
-                        title={value.code.title}
-                        data={value.code.json ?? value.code.pre}
-                     >
-                        {value.code.json && <pre>{JSON.stringify(value.code.json, null, 2)}</pre>}
-                        {value.code.pre && <pre>{value.code.pre}</pre>}
-                     </HightLightAtom>
-                  )}
-               </MainDocsComponent>
-            ))}
-      </>
-   );
+  return (
+    <div className="space-y-8">
+      {/* Endpoint */}
+      <section id="endpoint">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-[10px] font-bold font-mono px-1.5 py-0.5 rounded bg-warning-light text-warning">
+            POST
+          </span>
+          <h2 className="text-xl font-bold">/api/check-games</h2>
+        </div>
+        <p className="text-sm text-muted">
+          Validate a game user account by User ID and Server ID. <strong>Requires API Key.</strong>
+        </p>
+      </section>
+
+      {/* Authentication */}
+      <section id="authentication">
+        <h3 className="text-lg font-semibold mb-3">Authentication</h3>
+        <div className="rounded-lg border border-border overflow-hidden">
+          <div className="px-4 py-2 bg-surface border-b border-border text-xs font-semibold text-muted">Required Header</div>
+          <div className="p-4 bg-[#fafafa]">
+            <code className="text-xs font-mono">x-api-key: <span className="text-primary">YOUR_API_KEY</span></code>
+          </div>
+        </div>
+        <p className="text-xs text-muted mt-2">
+          Get your API key from the <Link href="/dashboard/api-keys" className="text-primary hover:underline font-medium">Dashboard → API Keys</Link> page.
+          Free members get 1000 requests/day. VIP members have unlimited access.
+        </p>
+      </section>
+
+      {/* Parameters */}
+      <section id="parameters">
+        <h3 className="text-lg font-semibold mb-3">Parameters</h3>
+
+        {/* Query Params */}
+        <div className="mb-4">
+          <h4 className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">
+            Query Parameters
+          </h4>
+          <div className="rounded-lg border border-border overflow-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-surface border-b border-border">
+                  <th className="text-left px-4 py-2 text-xs font-semibold text-muted">
+                    Name
+                  </th>
+                  <th className="text-left px-4 py-2 text-xs font-semibold text-muted">
+                    Type
+                  </th>
+                  <th className="text-left px-4 py-2 text-xs font-semibold text-muted">
+                    Required
+                  </th>
+                  <th className="text-left px-4 py-2 text-xs font-semibold text-muted">
+                    Description
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="px-4 py-2 text-xs">
+                    <code className="bg-surface px-1.5 py-0.5 rounded font-mono">
+                      type
+                    </code>
+                  </td>
+                  <td className="px-4 py-2 text-xs text-muted">string</td>
+                  <td className="px-4 py-2 text-xs">
+                    <span className="text-danger font-semibold">Yes</span>
+                  </td>
+                  <td className="px-4 py-2 text-xs text-muted">
+                    Game type from{" "}
+                    <Link
+                      href="/docs/list-games"
+                      className="text-primary hover:underline"
+                    >
+                      /api/list-games
+                    </Link>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Body Params */}
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <h4 className="text-xs font-semibold text-muted uppercase tracking-wider">
+              Request Body
+            </h4>
+            <select
+              value={selectedGame}
+              onChange={(e) => setSelectedGame(e.target.value)}
+              className="text-xs px-2 py-1 rounded border border-border bg-white cursor-pointer outline-none focus:border-primary transition"
+            >
+              {ListGames.map((g) => (
+                <option key={g.prefix} value={g.prefix}>
+                  {g.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="rounded-lg border border-border overflow-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-surface border-b border-border">
+                  <th className="text-left px-4 py-2 text-xs font-semibold text-muted">
+                    Name
+                  </th>
+                  <th className="text-left px-4 py-2 text-xs font-semibold text-muted">
+                    Type
+                  </th>
+                  <th className="text-left px-4 py-2 text-xs font-semibold text-muted">
+                    Required
+                  </th>
+                  <th className="text-left px-4 py-2 text-xs font-semibold text-muted">
+                    Description
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-border-light">
+                  <td className="px-4 py-2 text-xs">
+                    <code className="bg-surface px-1.5 py-0.5 rounded font-mono">
+                      userId
+                    </code>
+                  </td>
+                  <td className="px-4 py-2 text-xs text-muted">string</td>
+                  <td className="px-4 py-2 text-xs">
+                    <span className="text-danger font-semibold">Yes</span>
+                  </td>
+                  <td className="px-4 py-2 text-xs text-muted">
+                    Game user ID
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-2 text-xs">
+                    <code className="bg-surface px-1.5 py-0.5 rounded font-mono">
+                      serverId
+                    </code>
+                  </td>
+                  <td className="px-4 py-2 text-xs text-muted">string</td>
+                  <td className="px-4 py-2 text-xs">
+                    <span className="text-muted">
+                      {selectedGame === "mobile-legends" ? "Yes" : "No"}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2 text-xs text-muted">
+                    Zone/Server ID
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* Example Request */}
+      <section id="example-request">
+        <h3 className="text-lg font-semibold mb-3">Example Request</h3>
+        <CodeTabs
+          tabs={[
+            {
+              label: "cURL",
+              language: "bash",
+              code: `curl -X POST 'https://mylix.app/api/check-games?type=${selectedGame}' \\
+  -H 'Content-Type: application/json' \\
+  -H 'x-api-key: YOUR_API_KEY' \\
+  -d '{"userId": "123456789", "serverId": "1234"}'`,
+            },
+            {
+              label: "JavaScript",
+              language: "javascript",
+              code: `fetch('https://mylix.app/api/check-games?type=${selectedGame}', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'x-api-key': 'YOUR_API_KEY'
+  },
+  body: JSON.stringify({
+    userId: '123456789',
+    serverId: '1234'
+  })
+})
+  .then(res => res.json())
+  .then(data => console.log(data))`,
+            },
+            {
+              label: "Python",
+              language: "python",
+              code: `import requests
+
+response = requests.post(
+    'https://mylix.app/api/check-games?type=${selectedGame}',
+    headers={'x-api-key': 'YOUR_API_KEY'},
+    json={"userId": "123456789", "serverId": "1234"}
+)
+print(response.json())`,
+            },
+          ]}
+        />
+      </section>
+
+      {/* Example Response */}
+      <section id="example-response">
+        <h3 className="text-lg font-semibold mb-3">Example Response</h3>
+        <div className="space-y-3">
+          {/* Success */}
+          <div className="rounded-lg border border-border overflow-hidden">
+            <div className="px-4 py-2 bg-surface border-b border-border flex items-center gap-2">
+              <span className="text-[10px] font-bold text-success">200</span>
+              <span className="text-xs text-muted">Success</span>
+            </div>
+            <pre className="p-4 bg-[#fafafa] text-xs font-mono overflow-x-auto leading-relaxed">
+              {JSON.stringify(
+                {
+                  status: 200,
+                  message: "Data successfully retrieved",
+                  data: { username: "kangyann.", country: "Indonesia" },
+                },
+                null,
+                2
+              )}
+            </pre>
+          </div>
+          {/* Error */}
+          <div className="rounded-lg border border-border overflow-hidden">
+            <div className="px-4 py-2 bg-surface border-b border-border flex items-center gap-2">
+              <span className="text-[10px] font-bold text-danger">404</span>
+              <span className="text-xs text-muted">Not Found</span>
+            </div>
+            <pre className="p-4 bg-[#fafafa] text-xs font-mono overflow-x-auto leading-relaxed">
+              {JSON.stringify(
+                {
+                  status: 404,
+                  message: "Not found user with this userId: 123456789",
+                },
+                null,
+                2
+              )}
+            </pre>
+          </div>
+        </div>
+      </section>
+
+      {/* Try It */}
+      <section id="try-it">
+        <h3 className="text-lg font-semibold mb-3">Try It Live</h3>
+        <ApiPlayground
+          method="POST"
+          endpoint={`/api/check-games?type=${selectedGame}`}
+          description={`Test check-games with ${selectedGame}`}
+          requiresApiKey
+          fields={[
+            {
+              name: "userId",
+              label: "User ID",
+              placeholder: "123456789",
+              required: true,
+            },
+            {
+              name: "serverId",
+              label: "Zone / Server ID",
+              placeholder: "1234",
+              required: selectedGame === "mobile-legends",
+            },
+          ]}
+          defaultBody={JSON.stringify(
+            { userId: "123456789", serverId: "1234" },
+            null,
+            2
+          )}
+        />
+      </section>
+    </div>
+  );
 }

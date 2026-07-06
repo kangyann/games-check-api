@@ -41,7 +41,7 @@ export default class ApiKeyClass {
         return {
           message: "403 - Account disabled. Contact support.",
           status: 403,
-        };
+        }; 
       }
       return {
         message: "200 - API Key is valid.",

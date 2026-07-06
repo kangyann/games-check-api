@@ -1,6 +1,7 @@
 import { PrismaConnect } from "../lib/prisma-config";
 
 export interface PrismaListGames {
+  id: number;
   name: string;
   prefix: string;
   status: boolean;
@@ -20,6 +21,7 @@ export default class ListGamesClass {
       const IsHaveGame: PrismaListGames = await PrismaConnect.listGames.findFirstOrThrow({
         where: { codeGame },
         select: {
+          id: true,
           name: true,
           prefix: true,
           status: true,

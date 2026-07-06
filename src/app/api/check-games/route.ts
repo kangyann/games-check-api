@@ -12,6 +12,7 @@ import CheckGames from "@/lib/checkGames";
 import ApiKeyClass, { ApiKeyClassResponse } from "@/class/ApiKey.class";
 import ValidationRouteApi from "@/lib/validation-route-api";
 import ApiLogClass from "@/class/ApiLog.class";
+import TransactionClass from "@/class/Transaction.class";
 
 /**
  * @function POST
@@ -72,14 +73,26 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ ...ValidationDataJsonResponse }, { status: ValidationDataJson.status });
   }
 
+  // Check Transaction if already data exists.
+  const { userId, serverId } = ValidationDataJson.data as { userId: string; serverId: string };
+
+  const Transaction = new TransactionClass(userId);
+  const CheckTransactionExists = await Transaction.Check();
+
+  if (CheckTransactionExists.status === 200 || CheckTransactionExists.data) {
+    return NextResponse.json({ ...CheckTransactionExists }, { status: CheckTransactionExists.status });
+  }
+
   // Request to external game API & return output to client.
   const OutputGameValidation: CheckGamesResponse | null = await CheckGames.check({
     prefix: CheckGamesList.data.prefix,
-    data: ValidationDataJson.data as { userId: string; serverId: string },
+    data: { userId, serverId },
   });
 
-  // Create Log to Database.
+  // Create Log & Transaction to database.
   console.log(`[${realIp}][${CheckGamesList.data?.name}][${OutputGameValidation.status}]`);
+
+  Transaction.Create(userId, OutputGameValidation.data?.username ?? "N/A", CheckGamesList.data.id, serverId);
   ApiLog.CreateLog({
     apiKeyId: CheckApiKey.data.id,
     userId: CheckApiKey.data.user.id,

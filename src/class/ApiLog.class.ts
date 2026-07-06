@@ -10,10 +10,10 @@ export interface CreateApiLogRequest {
   ip: string | null;
 }
 export default class ApiLogClass {
-  public CreateLog(request: CreateApiLogRequest) {
+  public async CreateLog(request: CreateApiLogRequest) {
     try {
       console.log(`[ApiLog][${request.endpoint}][${request.ip}] - Log created successfully.`);
-      PrismaConnect.apiLog.create({
+      await PrismaConnect.apiLog.create({
         data: { ...request },
       });
     } catch (error) {

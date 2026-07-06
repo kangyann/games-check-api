@@ -88,6 +88,9 @@ model ListGames {
   id           Int           @id @default(autoincrement())
   name         String        @unique
   prefix       String        @unique
+  status       Boolean       @default(true)
+  userId       Boolean       @default(true)
+  serverId     Boolean       @default(false)
   codeGame     String        @unique
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @default(now())

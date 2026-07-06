@@ -4,12 +4,14 @@
  * @interface /interface/validation.interface
  */
 import { NextRequest, NextResponse } from "next/server";
-import { isJson } from "@/lib/isJson";
+import { isJson, JsonValidationResponse } from "@/lib/isJson";
 import { CheckGamesResponse } from "@/interfaces/check-games.interface";
-import { PrismaConnect } from "@/lib/prisma-config";
 
-import ListGamesClass, { ClassListGamesResponse } from "@/lib/ListGames/ListGames.class";
+import ListGamesClass, { ClassListGamesResponse } from "@/class/ListGames.class";
 import CheckGames from "@/lib/checkGames";
+import ApiKeyClass, { ApiKeyClassResponse } from "@/class/ApiKey.class";
+import ValidationRouteApi from "@/lib/validation-route-api";
+import ApiLogClass from "@/class/ApiLog.class";
 
 /**
  * @function POST
@@ -20,137 +22,72 @@ import CheckGames from "@/lib/checkGames";
  */
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-   const params: string | null = new URL(request.url).searchParams.get("type") ?? null;
-   const contentType = request.headers.get("Content-Type") ?? "";
-   const apiKeyHeader = request.headers.get("x-api-key") ?? "";
+  //  Request Parameters
+  const params: string = new URL(request.url).searchParams.get("type") ?? "";
+  const contentType: string = request.headers.get("Content-Type") ?? "";
+  const apiKeyHeader: string = request.headers.get("x-api-key") ?? "";
+  const realIp: string | null = request.headers.get("x-forwarded-for") ?? request.headers.get("x-real-ip") ?? null;
 
-   // Validate API key
-   if (!apiKeyHeader) {
-      return NextResponse.json(
-         {
-            message: "401 - Missing API Key. Provide 'x-api-key' header.",
-            status: 401,
-         },
-         { status: 401 }
-      );
-   }
+  //  Check Request & Validation Route
+  const RouteValidation = new ValidationRouteApi(params, contentType, apiKeyHeader);
 
-   const apiKeyRecord = await PrismaConnect.apiKey.findUnique({
-      where: { key: apiKeyHeader },
-      include: { user: { select: { id: true, role: true, isActive: true } } },
-   });
+  if (!params || !contentType || !apiKeyHeader) {
+    const CheckValidation = RouteValidation.checking();
+    if (CheckValidation.status !== 200) {
+      return NextResponse.json({ ...CheckValidation }, { status: CheckValidation.status });
+    }
+  }
 
-   if (!apiKeyRecord || !apiKeyRecord.isActive) {
-      return NextResponse.json(
-         {
-            message: "401 - Invalid or revoked API Key.",
-            status: 401,
-         },
-         { status: 401 }
-      );
-   }
+  //  Check API Key
+  const ApiKey = new ApiKeyClass();
+  const CheckApiKey: ApiKeyClassResponse = await ApiKey.findUnique(apiKeyHeader);
 
-   if (!apiKeyRecord.user.isActive) {
-      return NextResponse.json(
-         {
-            message: "403 - Account disabled. Contact support.",
-            status: 403,
-         },
-         { status: 403 }
-      );
-   }
+  if (CheckApiKey.status !== 200 || !CheckApiKey.data) {
+    return NextResponse.json({ ...CheckApiKey }, { status: CheckApiKey.status });
+  }
 
-   // Rate limit check
-   const { role } = apiKeyRecord.user;
-   if (role === "MEMBER") {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const todayCount = await PrismaConnect.apiLog.count({
-         where: { userId: apiKeyRecord.user.id, createdAt: { gte: today } },
-      });
-      if (todayCount >= 1000) {
-         return NextResponse.json(
-            {
-               message: "429 - Daily rate limit exceeded (1000/day). Upgrade to VIP for unlimited access.",
-               status: 429,
-            },
-            { status: 429 }
-         );
-      }
-   }
+  const { role, id } = CheckApiKey.data.user;
 
-   if (!params) {
-      return NextResponse.json(
-         {
-            message: "400 - Missing {type} query.",
-            status: 400,
-         },
-         { status: 400 }
-      );
-   }
+  //  Check API Log
+  const ApiLog = new ApiLogClass();
+  const CheckApiLog = await ApiLog.CheckLog(role, id);
 
-   if (!contentType || !contentType.includes("application/json")) {
-      return NextResponse.json(
-         {
-            message: "400 - Content-Type must be application/json.",
-            status: 400,
-         },
-         { status: 400 }
-      );
-   }
+  if (CheckApiLog.status !== 200) {
+    return NextResponse.json({ ...CheckApiLog }, { status: CheckApiLog.status });
+  }
 
-   const jsonValidation: Record<string, any> = await isJson(request);
+  //  Check Game List
+  const ListGames = new ListGamesClass();
+  const CheckGamesList: ClassListGamesResponse = await ListGames.findFirst({ codeGame: params });
 
-   if (!jsonValidation?.isValid) {
-      const { isValid, ...newestResponse } = jsonValidation as Partial<{ isValid: boolean; message: string; status: number }>;
-      return NextResponse.json(newestResponse, { status: newestResponse.status });
-   }
+  if (CheckGamesList.status !== 200 || !CheckGamesList.data) {
+    return NextResponse.json({ ...CheckGamesList }, { status: CheckGamesList.status });
+  }
 
-   const ListGames = new ListGamesClass()
-   const type: ClassListGamesResponse = await ListGames.findFirst({ codeGame: params })
+  // Validation data request body with actual game data on database.
+  const ValidationDataJson: JsonValidationResponse = await isJson(request, CheckGamesList.data);
 
-   if (!type.data) {
-      return NextResponse.json(
-         {
-            message: "404 - Types for game does not exist.",
-            status: 404,
-            ref: "Fetch [GET] : /api/list-game for available types",
-         },
-         { status: 404 }
-      );
-   }
+  if (!ValidationDataJson.isValid || !ValidationDataJson.data) {
+    const { data, isValid, ...ValidationDataJsonResponse } = ValidationDataJson;
+    return NextResponse.json({ ...ValidationDataJsonResponse }, { status: ValidationDataJson.status });
+  }
 
-   const { userId, serverId } = jsonValidation
-   if (!userId) {
-      return NextResponse.json({
-         status: 400,
-         message: "Invalid parameters {userId} or {zoneId}."
-      }, { status: 400 })
-   }
+  // Request to external game API & return output to client.
+  const OutputGameValidation: CheckGamesResponse | null = await CheckGames.check({
+    prefix: CheckGamesList.data.prefix,
+    data: ValidationDataJson.data as { userId: string; serverId: string },
+  });
 
-   console.log(`[REQUEST FROM ${request.headers.get("x-forwarded-for")}] -> ${type.data?.name}`)
-   const isValid: CheckGamesResponse | null = await CheckGames.check({ prefix: type.data.prefix, data: jsonValidation as { userId: string, serverId: string } });
+  // Create Log to Database.
+  console.log(`[${realIp}][${CheckGamesList.data?.name}][${OutputGameValidation.status}]`);
+  ApiLog.CreateLog({
+    apiKeyId: CheckApiKey.data.id,
+    userId: CheckApiKey.data.user.id,
+    endpoint: `/api/check-games?type=${params}`,
+    method: "POST",
+    status: OutputGameValidation?.status ?? 500,
+    ip: realIp,
+  });
 
-   // Log the request
-   await PrismaConnect.apiLog.create({
-      data: {
-         apiKeyId: apiKeyRecord.id,
-         userId: apiKeyRecord.user.id,
-         endpoint: `/api/check-games?type=${params}`,
-         method: "POST",
-         status: isValid?.status ?? 500,
-         ip: request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || null,
-      },
-   });
-
-   if (isValid?.status !== 200) {
-      return NextResponse.json(
-         {
-            status: isValid.status,
-            message: isValid.message,
-         },
-         { status: isValid.status }
-      );
-   }
-   return NextResponse.json({ ...isValid }, { status: isValid?.status });
+  return NextResponse.json({ ...OutputGameValidation }, { status: OutputGameValidation?.status });
 }

@@ -29,14 +29,14 @@ export default class CheckGames {
 
       if (result && !result.data) {
          return {
-            message: `Not found user with this userId: ${userId}`,
+            message: `Not found user with this userId: ${userId} ${serverId && `and serverId: ${serverId}`}`,
             status: 404,
          };
       }
 
       return {
          status: 200,
-         message: "Data successfully retrieved ",
+         message: "Data successfully retrieved.",
          data: result?.data
       };
    }

@@ -37,7 +37,7 @@ export default class CheckGames {
       data: {
         username,
         userId: user_id,
-        serverId: zone,
+        ...(zone && { serverId: zone }),
         ...(region && { region }),
       },
     };

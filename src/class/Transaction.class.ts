@@ -17,7 +17,7 @@ export default class TransactionClass {
         data: {
           username: checking.nickname,
           userId: checking.targetId,
-          serverId: checking.serverId,
+          ...(checking.serverId && { serverId: checking.serverId }),
           ...(checking.region && { region: checking.region }),
         },
       };

@@ -8,7 +8,7 @@ interface ListGamesObj {
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 class test_RouteGamesCheckApi {
   private ApiEndpointUrl: string = `http://localhost:3000/api/check-games?type=`; // ?={typeGames}
-  private apikey: string = "" // Fill With your x-api-key from mylix.app
+  private apikey: string = ""; // Fill With your x-api-key from mylix.app
   private typeGames: Record<ListGames, Partial<ListGamesObj>>;
 
   constructor(typeGames: Record<ListGames, Partial<ListGamesObj>>) {
@@ -63,6 +63,10 @@ const typeGames = {
   "point-blank": {
     code: "point-blank",
     userId: "red_death2",
+  },
+  "8-ball-pool": {
+    code: "8-ball-pool",
+    userId: 4959999997,
   },
 };
 

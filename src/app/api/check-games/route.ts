@@ -93,7 +93,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   // Request to external game API & return output to client.
   const OutputGameValidation: CheckGamesResponse | null = await CheckGames.check({
     prefix: CheckGamesList.data.prefix,
-    data: { userId, serverId },
+    data: { userId, serverId: serverId ?? null},
   });
   ApiLog.CreateLog({ ...DataRequestLog, status: CheckTransactionExists.status });
 
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     nickname: OutputGameValidation.data?.username,
     listGamesId: CheckGamesList.data.id,
     targetId: userId,
-    serverId: serverId,
+    serverId: OutputGameValidation.data?.serverId,
     ...(OutputGameValidation.data?.region && { region: OutputGameValidation.data.region }),
   };
 

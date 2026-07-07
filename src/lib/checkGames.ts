@@ -6,8 +6,8 @@ import { CheckGamesParams, CheckGamesResponse } from "../interfaces/check-games.
  */
 
 export default class CheckGames {
-  private static url: string = `${process.env.GAME_API_URL!}/api/game`;
-  private static key: string = process.env.GAME_API_KEY!;
+  private static url: string = `${process.env.GAME_API_URL as string}/api/game`;
+  private static key: string = process.env.GAME_API_KEY as string;
 
   /**
    * @function check
@@ -19,7 +19,11 @@ export default class CheckGames {
 
   static async check({ data, prefix }: CheckGamesParams): Promise<CheckGamesResponse> {
     const { userId, serverId } = data;
-    const url = `${this.url}/${prefix}?id=${userId}&zone=${serverId}&key=${this.key}`;
+
+    const url = `${this.url}/${prefix}?id=${userId}
+    ${serverId ? `&zone=${serverId}` : ""}
+    &key=${this.key}`;
+
     const result: Record<string, any> = await ApiFetch({ url: url, method: "GET" });
 
     if (result && !result.data) {
@@ -29,16 +33,15 @@ export default class CheckGames {
       };
     }
 
-    const { username, user_id, zone, region }: { username: string; user_id: string; zone: string; region?: string } =
-      result.data;
+    console.log("THIS", result);
     return {
       status: 200,
       message: "Data successfully retrieved.",
       data: {
-        username,
-        userId: user_id,
-        ...(zone && { serverId: zone }),
-        ...(region && { region }),
+        username: result.data.username,
+        userId: result.data.user_id,
+        ...(result.data.zone && { serverId: result.data.zone }),
+        ...(result.data.region && { region: result.data.region }),
       },
     };
   }

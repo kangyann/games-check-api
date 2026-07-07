@@ -12,12 +12,12 @@ export interface CreateApiLogRequest {
 export default class ApiLogClass {
   public async CreateLog(request: CreateApiLogRequest) {
     try {
-      console.log(`[ApiLog][${request.endpoint}][${request.ip}] - Log created successfully.`);
       await PrismaConnect.apiLog.create({
         data: { ...request },
       });
+      console.log(`[CREATE LOG][${request.endpoint}][${request.ip}][200]`);
     } catch (error) {
-      console.log(`[ApiLog][${request.endpoint}] - Error creating log:`, error);
+      console.log(`[ApiLog][${request.endpoint}][500]`, error);
       return { message: "500 - Internal Server Error.", status: 500 };
     }
   }

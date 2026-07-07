@@ -1,43 +1,45 @@
 import { ApiFetch } from "./api";
-import {
-   CheckGamesParams,
-   CheckGamesResponse,
-} from "../interfaces/check-games.interface";
+import { CheckGamesParams, CheckGamesResponse } from "../interfaces/check-games.interface";
 
 /**
  * @class CheckGames
  */
 
 export default class CheckGames {
+  private static url: string = `${process.env.GAME_API_URL!}/api/game`;
+  private static key: string = process.env.GAME_API_KEY!;
 
-   private static url: string = `${process.env.GAME_API_URL!}/api/game`
-   private static key: string = process.env.GAME_API_KEY!
+  /**
+   * @function check
+   * @static
+   * @constant
+   * @param {CheckGamesParams} params - Parameter Request {userId} {zoneId}
+   * @returns {Promise<CheckGamesResponse>}
+   */
 
-   /**
-    * @function check
-    * @static
-    * @constant
-    * @param {CheckGamesParams} params - Parameter Request {userId} {zoneId}
-    * @returns {Promise<CheckGamesResponse>}
-    */
+  static async check({ data, prefix }: CheckGamesParams): Promise<CheckGamesResponse> {
+    const { userId, serverId } = data;
+    const url = `${this.url}/${prefix}?id=${userId}&zone=${serverId}&key=${this.key}`;
+    const result: Record<string, any> = await ApiFetch({ url: url, method: "GET" });
 
-
-   static async check({ data, prefix }: CheckGamesParams): Promise<CheckGamesResponse> {
-      const { userId, serverId } = data
-      const url = `${this.url}/${prefix}?id=${userId}&zone=${serverId}&key=${this.key}`
-      const result: Record<string, any> = await ApiFetch({ url: url, method: "GET" });
-
-      if (result && !result.data) {
-         return {
-            message: `Not found user with this userId: ${userId} ${serverId && `and serverId: ${serverId}`}`,
-            status: 404,
-         };
-      }
-
+    if (result && !result.data) {
       return {
-         status: 200,
-         message: "Data successfully retrieved.",
-         data: result?.data
+        message: `Not found user with this userId: ${userId} ${serverId && `and serverId: ${serverId}`}`,
+        status: 404,
       };
-   }
+    }
+
+    const { username, user_id, zone, region }: { username: string; user_id: string; zone: string; region?: string } =
+      result.data;
+    return {
+      status: 200,
+      message: "Data successfully retrieved.",
+      data: {
+        username,
+        userId: user_id,
+        serverId: zone,
+        ...(region && { region }),
+      },
+    };
+  }
 }

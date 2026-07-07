@@ -45,7 +45,6 @@ export default class ListGamesClass {
       }
       return { message: "Game found.", status: 200, data: IsHaveGame };
     } catch (error) {
-      console.log(error);
       return { message: "404 - Types for game does not exist.", status: 404 };
     }
   }

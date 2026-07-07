@@ -78,8 +78,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   const Transaction = new TransactionClass(userId);
   const CheckTransactionExists = await Transaction.Check();
-
+  const DataRequestLog = {
+    apiKeyId: CheckApiKey.data.id,
+    userId: CheckApiKey.data.user.id,
+    endpoint: `/api/check-games?type=${params}`,
+    method: "POST",
+    ip: realIp,
+  };
   if (CheckTransactionExists.status === 200 || CheckTransactionExists.data) {
+    ApiLog.CreateLog({ ...DataRequestLog, status: CheckTransactionExists.status });
     return NextResponse.json({ ...CheckTransactionExists }, { status: CheckTransactionExists.status });
   }
 
@@ -88,19 +95,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     prefix: CheckGamesList.data.prefix,
     data: { userId, serverId },
   });
+  ApiLog.CreateLog({ ...DataRequestLog, status: CheckTransactionExists.status });
 
   // Create Log & Transaction to database.
   console.log(`[${realIp}][${CheckGamesList.data?.name}][${OutputGameValidation.status}]`);
 
-  Transaction.Create(userId, OutputGameValidation.data?.username ?? "N/A", CheckGamesList.data.id, serverId);
-  ApiLog.CreateLog({
-    apiKeyId: CheckApiKey.data.id,
-    userId: CheckApiKey.data.user.id,
-    endpoint: `/api/check-games?type=${params}`,
-    method: "POST",
-    status: OutputGameValidation?.status ?? 500,
-    ip: realIp,
-  });
+  const PayloadTransaction = {
+    nickname: OutputGameValidation.data?.username,
+    listGamesId: CheckGamesList.data.id,
+    targetId: userId,
+    serverId: serverId,
+    ...(OutputGameValidation.data?.region && { region: OutputGameValidation.data.region }),
+  };
+
+  Transaction.Create(PayloadTransaction);
 
   return NextResponse.json({ ...OutputGameValidation }, { status: OutputGameValidation?.status });
 }

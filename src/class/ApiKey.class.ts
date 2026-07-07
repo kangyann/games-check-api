@@ -49,7 +49,6 @@ export default class ApiKeyClass {
         data: apiKeyRecord,
       };
     } catch (error) {
-      console.log(error);
       return {
         message: "500 - Internal Server Error.",
         status: 500,

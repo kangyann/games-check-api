@@ -1,9 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useOnThisPage } from "@/context/OnThisPage";
-import CodeTabs, {
-  ApiPlayground,
-} from "@/components/organisms/docs/code-tabs";
+import CodeTabs, { ApiPlayground } from "@/components/organisms/docs/code-tabs";
 import { FaRocket, FaCode, FaShieldHalved, FaBolt } from "react-icons/fa6";
 
 const anchorLinks = [
@@ -26,8 +24,7 @@ export default function Docs() {
       <section id="getting-started">
         <h2 className="text-xl font-bold mb-2">Getting Started</h2>
         <p className="text-sm text-muted leading-relaxed">
-          The Mylix Games API lets you validate game user accounts instantly.
-          Free, fast, and developer-friendly.
+          The Mylix Games API lets you validate game user accounts instantly. Free, fast, and developer-friendly.
         </p>
       </section>
 
@@ -84,9 +81,7 @@ export default function Docs() {
       {/* Quick Start */}
       <section id="quick-start">
         <h3 className="text-lg font-semibold mb-3">Quick Start</h3>
-        <p className="text-sm text-muted mb-3">
-          Use any HTTP client to make requests:
-        </p>
+        <p className="text-sm text-muted mb-3">Use any HTTP client to make requests:</p>
         <CodeTabs
           tabs={[
             {
@@ -116,14 +111,8 @@ print(response.json())`,
       {/* Try It */}
       <section id="try-it">
         <h3 className="text-lg font-semibold mb-3">Try It Live</h3>
-        <p className="text-sm text-muted mb-3">
-          Test the API right here — no setup needed.
-        </p>
-        <ApiPlayground
-          method="GET"
-          endpoint="/api/list-games"
-          description="Retrieve all available game types."
-        />
+        <p className="text-sm text-muted mb-3">Test the API right here — no setup needed.</p>
+        <ApiPlayground method="GET" endpoint="/api/list-games" description="Retrieve all available game types." />
       </section>
     </div>
   );

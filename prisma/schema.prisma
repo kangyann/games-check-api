@@ -108,6 +108,7 @@ model Transaction {
   nickname    String            @default("")
   targetId    String
   serverId    String            @default("")
+  region      String?
   listGamesId Int
   status      StatusTransaction @default(PENDING)
   createdAt   DateTime          @default(now())

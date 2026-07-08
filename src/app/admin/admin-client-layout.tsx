@@ -15,12 +15,14 @@ import {
   FaRightFromBracket,
   FaBell,
   FaReceipt,
+  FaGamepad,
 } from "react-icons/fa6";
 
 const sidebarLinks = [
   { href: "/dashboard", label: "Dashboard", icon: FaTv },
   { href: "/admin", label: "Overview", icon: FaChartBar },
   { href: "/admin/users", label: "Users", icon: FaUsers },
+  { href: "/admin/games", label: "Games", icon: FaGamepad },
   { href: "/admin/monitoring", label: "Monitoring", icon: FaWaveSquare },
   { href: "/admin/notifications", label: "Notifications", icon: FaBell },
   { href: "/admin/transactions", label: "Transactions", icon: FaReceipt },

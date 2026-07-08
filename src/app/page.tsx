@@ -23,7 +23,7 @@ export default function Home(): React.ReactNode {
               </span>
             </h1>
             <p className="text-sm text-muted">
-              Open Source · Developer Friendly · Free to Use
+              Check Account Game · Developer Friendly
             </p>
             <div className="flex flex-wrap justify-center items-center gap-2 mt-4">
               <Link

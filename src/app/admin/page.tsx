@@ -83,7 +83,7 @@ export default function AdminOverview() {
       icon: FaGamepad,
       color: "text-warning",
       bg: "bg-warning-light",
-      href: "/admin/health",
+      href: "/admin/games",
     },
   ];
 
